@@ -1,0 +1,4 @@
+name: swiftsim
+version: latest
+nav:
+  - modules/ROOT/nav.adoc
