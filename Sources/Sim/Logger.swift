@@ -16,14 +16,14 @@
 // limitations under the License.
 //
 
-enum LogLevel {
+public enum LogLevel {
   case Debug
   case Trace
   case Info
   case Warning
   case Error
 }
-class Logger {
+public class Logger {
   func log(sender: Model, level: LogLevel, message: String) {
     print("\(level): \(sender.name): \(message)")
   }

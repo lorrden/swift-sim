@@ -31,7 +31,7 @@ struct TimedEvent: Comparable {
   }
 }
 
-class Scheduler {
+public class Scheduler {
   private var immediateEvents: [() -> ()] = []
   private var timedEvents: Heap<TimedEvent> = []
 
@@ -80,16 +80,16 @@ class Scheduler {
     runImmediateEvents()
   }
 }
-class EventManager {
+public class EventManager {
 
 }
-class TimeKeeper {
+public class TimeKeeper {
   var simTime: Int = 0
   var epochTime: Int = 0
   var missionStartTime = 0
 }
 
-class Simulator {
+public class Simulator {
   public var logger : Logger
   public var scheduler : Scheduler
   public var eventManager : EventManager

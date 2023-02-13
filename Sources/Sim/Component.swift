@@ -17,7 +17,7 @@
 //
 
 @dynamicMemberLookup
-class Component : Model {
+public class Component : Model {
   var models: [String: Model]
 
   override init(name: String) {

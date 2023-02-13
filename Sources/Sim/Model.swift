@@ -18,7 +18,7 @@
 
 import Foundation
 
-class Model {
+public class Model {
   let name: String
   init(name: String) {
     self.name = name
