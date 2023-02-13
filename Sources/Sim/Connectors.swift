@@ -17,7 +17,7 @@
 //
 
 @propertyWrapper
-struct Input<T> {
+public struct Input<T> {
   public var wrappedValue: T {
     get {
       _publisher.val
@@ -27,7 +27,7 @@ struct Input<T> {
     }
   }
 
-  class Publisher {
+  public class Publisher {
     public var val: T
     func write(value: T) {
       self.val = value
@@ -41,14 +41,14 @@ struct Input<T> {
   public var projectedValue : Publisher {
     _publisher
   }
-  init(wrappedValue: T)
+  public init(wrappedValue: T)
   {
     self._publisher = Publisher(wrappedValue: wrappedValue)
   }
 }
 
 @propertyWrapper
-struct Output<T> {
+public struct Output<T> {
   public var wrappedValue: T {
     didSet {
       for v in projectedValue.outputs {
@@ -57,10 +57,10 @@ struct Output<T> {
     }
   }
 
-  class Publisher {
+  public class Publisher {
     var outputs : [Input<T>.Publisher] = []
 
-    func connect(to: Input<T>.Publisher) {
+    public func connect(to: Input<T>.Publisher) {
       outputs.append(to)
     }
   }
@@ -68,5 +68,11 @@ struct Output<T> {
   var _publisher: Publisher = Publisher()
   public var projectedValue : Publisher {
     _publisher
+  }
+
+  public init(wrappedValue: T)
+  {
+    self._publisher = Publisher()
+    self.wrappedValue = wrappedValue
   }
 }
