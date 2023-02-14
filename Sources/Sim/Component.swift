@@ -20,12 +20,12 @@
 open class Component : Model {
   var models: [String: Model]
 
-  override init(name: String) {
+  public override init(name: String) {
     self.models = [:]
     super.init(name: name)
   }
 
-  subscript(dynamicMember member: String) -> Model? {
+  public subscript(dynamicMember member: String) -> Model? {
     return models[member]
   }
 }

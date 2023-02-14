@@ -35,39 +35,39 @@ public class Scheduler {
   private var immediateEvents: [() -> ()] = []
   private var timedEvents: Heap<TimedEvent> = []
 
-  func postImmediate(event: @escaping () -> ()) {
+  public func postImmediate(event: @escaping () -> ()) {
     immediateEvents.append(event)
   }
-  func post(simTime: Int, event: @escaping () -> ()) {
+  public func post(simTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: simTime, event: event))
   }
-  func post(missionTime: Int, event: @escaping () -> ()) {
+  public func post(missionTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: missionTime, event: event))
   }
-  func post(epochTime: Int, event: @escaping () -> ()) {
+  public func post(epochTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: epochTime, event: event))
 
   }
-  func post(simTime: Int, cycle: Int, event: @escaping () -> ()) {
+  public func post(simTime: Int, cycle: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: simTime, event: event))
 
   }
-  func post(missionTime: Int, cycle: Int, event: @escaping () -> ()) {
+  public func post(missionTime: Int, cycle: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: missionTime, event: event))
 
   }
-  func post(epochTime: Int, cycle: Int, event: @escaping () -> ()) {
+  public func post(epochTime: Int, cycle: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: epochTime, event: event))
 
   }
 
-  func runImmediateEvents() {
+  public func runImmediateEvents() {
     for e in immediateEvents {
       e()
     }
     immediateEvents.removeAll()
   }
-  func run(until: Int) {
+  public func run(until: Int) {
     runImmediateEvents()
 
     while (timedEvents.min()?.time ?? Int.max) <= until {
@@ -76,7 +76,7 @@ public class Scheduler {
       runImmediateEvents()
     }
   }
-  func run(for: Int) {
+  public func run(for: Int) {
     runImmediateEvents()
   }
 }
@@ -96,14 +96,14 @@ public class Simulator {
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
   // Add root model
-  func add(model: Model) {
+  public func add(model: Model) {
     if models.keys.contains(model.name) {
       return
     }
     models[model.name] = model
   }
 
-  init() {
+  public init() {
     self.logger = Logger()
     self.scheduler = Scheduler()
     self.eventManager = EventManager()
