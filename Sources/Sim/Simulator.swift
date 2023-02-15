@@ -89,6 +89,7 @@ public class EventManager {
 public class TimeKeeper {
   public var simTime: Int = 0
 
+  private var unixEpochDifference: Int = 946724400 * 1000000000 // J2000 epoch by default
   private var simEpochDifference: Int = 0
   public var epochTime: Int {
     get { simTime + simEpochDifference }
@@ -126,6 +127,16 @@ public class TimeKeeper {
   // EpochTime = MissionTime + MissionStartTime
   public func convertToSimTime(missionTime: Int) -> Int {
     return convertToSimTime(epochTime: convertToEpochTime(missionTime: missionTime))
+  }
+
+  public func convertToUnixTime(simTime: Int) -> Int {
+    return convertToUnixTime(epochTime: convertToEpochTime(simTime: simTime))
+  }
+  public func convertToUnixTime(missionTime: Int) -> Int {
+    return convertToUnixTime(epochTime: convertToEpochTime(missionTime: missionTime))
+  }
+  public func convertToUnixTime(epochTime: Int) -> Int {
+    return epochTime + unixEpochDifference
   }
 }
 
