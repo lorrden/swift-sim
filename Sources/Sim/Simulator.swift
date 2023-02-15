@@ -41,6 +41,9 @@ public class Scheduler {
   public func post(simTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: simTime, event: event))
   }
+  public func post(relative: Double, event: @escaping () -> ()) {
+    timedEvents.insert(TimedEvent(time: Int(relative * 1.0e9), event: event))
+  }
   public func post(missionTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: missionTime, event: event))
   }
@@ -84,9 +87,95 @@ public class EventManager {
 
 }
 public class TimeKeeper {
-  var simTime: Int = 0
-  var epochTime: Int = 0
-  var missionStartTime = 0
+  public var simTime: Int = 0
+
+  private var simEpochDifference: Int = 0
+  public var epochTime: Int {
+    get { simTime + simEpochDifference }
+    set { simEpochDifference = newValue - simTime }
+  }
+
+  // MissionTime = EpochTime – MissionStartTime
+  public var missionStartTime = 0
+  public var missionTime: Int {
+    get { epochTime - missionStartTime }
+    set { missionStartTime = epochTime - newValue }
+  }
+
+  // EpochTime = MissionTime + MissionStartTime
+  public func convertToEpochTime(missionTime: Int) -> Int {
+    return missionTime + missionStartTime
+  }
+  // MissionTime = EpochTime - MissionStartTime
+  public func convertToMissionTime(epochTime: Int) -> Int {
+    return epochTime - missionStartTime
+  }
+  // EpochTime = MissionTime + MissionStartTime
+  public func convertToEpochTime(simTime: Int) -> Int {
+    return simTime + simEpochDifference
+  }
+  // MissionTime = EpochTime - MissionStartTime
+  public func convertToMissionTime(simTime: Int) -> Int {
+    return convertToEpochTime(simTime: simTime) - missionStartTime
+  }
+
+  public func convertToSimTime(epochTime: Int) -> Int {
+    return epochTime - simEpochDifference
+  }
+
+  // EpochTime = MissionTime + MissionStartTime
+  public func convertToSimTime(missionTime: Int) -> Int {
+    return convertToSimTime(epochTime: convertToEpochTime(missionTime: missionTime))
+  }
+}
+
+public enum SimError : Error {
+  case CannotDelete
+  case CannotRemove
+  case CannotRestore
+  case CannotStore
+  case ContainerFull
+  case DuplicateName
+  case DuplicateUuid
+  case EventSinkAlreadySubscribed
+  case EventSinkNotSubscribed
+  case FieldAlreadyConnected
+
+  case InvalidAnyType
+  case InvalidArrayIndex
+  case InvalidArraySize
+  case InvalidArrayValue
+  case InvalidComponentState
+  case InvalidEventSink
+  case InvalidFieldName
+  case InvalidLibrary
+  case InvalidObjectName
+  case InvalidObjectType
+  case InvalidOperationName
+  case InvalidParameterCount
+  case InvalidParameterIndex
+  case InvalidParameterType
+  case InvalidParameterValue
+  case InvalidReturnValue
+  case InvalidSimualtorState
+  case InvalidTarget
+
+  case LibraryNotFound
+  case NotContained
+  case NotReferenced
+  case ReferenceFull
+
+  case VoidOperation
+  case DuplicateLiteral
+  case InvalidPrimitiveType
+  case TypeAlreadyRegistered
+  case TypeNotRegistered
+  case EntryPointAlreadySubscribed
+  case EntryPointNotSubscribed
+  case InvalidCycleTime
+  case InvalidEventId
+  case InvalidEventName
+  case InvalidSimulationTime
 }
 
 public class Simulator {
@@ -96,9 +185,9 @@ public class Simulator {
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
   // Add root model
-  public func add(model: Model) {
-    if models.keys.contains(model.name) {
-      return
+  public func add(model: Model) throws {
+    guard !models.keys.contains(model.name) else {
+      throw SimError.DuplicateName
     }
     models[model.name] = model
   }

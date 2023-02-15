@@ -19,10 +19,16 @@
 import XCTest
 @testable import Sim
 
+class Foo : Model {
+  override init(name: String) {
+    super.init(name: name)
+  }
+}
 final class SimulatorTest: XCTestCase {
     func testScheduler() throws {
       var wasCalled: Bool = false
       let sim = Simulator()
+
       sim.scheduler.postImmediate() {
         wasCalled = true;
       }
@@ -43,4 +49,12 @@ final class SimulatorTest: XCTestCase {
       XCTAssertEqual(ev2WasCalled, true)
 
     }
+
+  func testAddModel() throws {
+    let sim = Simulator()
+    XCTAssertNoThrow(try sim.add(model: Foo(name: "foo")))
+    XCTAssertThrowsError(try sim.add(model: Foo(name: "foo"))) { error in
+      XCTAssertEqual(error as! SimError, SimError.DuplicateName)
+    }
+  }
 }
