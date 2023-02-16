@@ -17,72 +17,7 @@
 //
 
 import Foundation
-import Collections
 
-struct TimedEvent: Comparable {
-  let time: Int
-  let event: () -> ()
-
-  static func < (lhs: TimedEvent, rhs: TimedEvent) -> Bool {
-    return lhs.time < rhs.time
-  }
-  static func == (lhs: TimedEvent, rhs: TimedEvent) -> Bool {
-    return lhs.time == rhs.time
-  }
-}
-
-public class Scheduler {
-  private var immediateEvents: [() -> ()] = []
-  private var timedEvents: Heap<TimedEvent> = []
-
-  public func postImmediate(event: @escaping () -> ()) {
-    immediateEvents.append(event)
-  }
-  public func post(simTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: simTime, event: event))
-  }
-  public func post(relative: Double, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: Int(relative * 1.0e9), event: event))
-  }
-  public func post(missionTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: missionTime, event: event))
-  }
-  public func post(epochTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: epochTime, event: event))
-
-  }
-  public func post(simTime: Int, cycle: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: simTime, event: event))
-
-  }
-  public func post(missionTime: Int, cycle: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: missionTime, event: event))
-
-  }
-  public func post(epochTime: Int, cycle: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: epochTime, event: event))
-
-  }
-
-  public func runImmediateEvents() {
-    for e in immediateEvents {
-      e()
-    }
-    immediateEvents.removeAll()
-  }
-  public func run(until: Int) {
-    runImmediateEvents()
-
-    while (timedEvents.min()?.time ?? Int.max) <= until {
-      let ev = timedEvents.popMin()!
-      ev.event()
-      runImmediateEvents()
-    }
-  }
-  public func run(for: Int) {
-    runImmediateEvents()
-  }
-}
 public class EventManager {
 
 }
@@ -152,9 +87,16 @@ public class Simulator {
 
   public init() {
     self.logger = Logger()
-    self.scheduler = Scheduler()
-    self.eventManager = EventManager()
     self.timeKeeper = TimeKeeper()
+    self.scheduler = Scheduler(withTimeKeeper: self.timeKeeper)
+    self.eventManager = EventManager()
     self.models = [:]
+  }
+
+  public func run(for delta: Int) {
+    scheduler.run(for: delta)
+  }
+  public func run(until: Int) {
+    scheduler.run(until: until)
   }
 }
