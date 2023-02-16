@@ -99,4 +99,10 @@ public class Simulator {
   public func run(until: Int) {
     scheduler.run(until: until)
   }
+  public func run(untilEpochTime epochTime: Int) {
+    scheduler.run(untilEpochTime: epochTime)
+  }
+  public func run(untilMissionTime missionTime: Int) {
+    scheduler.run(untilMissionTime: missionTime)
+  }
 }
