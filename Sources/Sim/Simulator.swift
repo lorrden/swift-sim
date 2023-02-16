@@ -71,13 +71,18 @@ public enum SimError : Error {
   case InvalidSimulationTime
 }
 
+/// Simulator
+///
+/// The `Simulator` is the main driver in `swift-sim`.
+/// The `Simulator` manages the simulation tree, and exposes functions to run the simulation.
 public class Simulator {
   public var logger : Logger
   public var scheduler : Scheduler
   public var eventManager : EventManager
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
-  // Add root model
+  /// Add root model
+  /// - Parameter model: Root model to add in the simulator
   public func add(model: Model) throws {
     guard !models.keys.contains(model.name) else {
       throw SimError.DuplicateName
@@ -85,6 +90,7 @@ public class Simulator {
     models[model.name] = model
   }
 
+  /// Create a new `Simulator`
   public init() {
     self.logger = Logger()
     self.timeKeeper = TimeKeeper()
@@ -93,15 +99,23 @@ public class Simulator {
     self.models = [:]
   }
 
+  /// Run simulation for a relative time mission time
+  /// - Parameter delta: Nanoseconds to run simulation
   public func run(for delta: Int) {
     scheduler.run(for: delta)
   }
+  /// Run simulation until an absoulte simulation time
+  /// - Parameter until: Absolute simulation time in nanoseconds
   public func run(until: Int) {
     scheduler.run(until: until)
   }
+  /// Run simulation until an absoulte epoch time
+  /// - Parameter epochTime: Absolute epoch time in nanoseconds
   public func run(untilEpochTime epochTime: Int) {
     scheduler.run(untilEpochTime: epochTime)
   }
+  /// Run simulation until an absoulte mission time
+  /// - Parameter missionTime: Absolute mission time in nanoseconds
   public func run(untilMissionTime missionTime: Int) {
     scheduler.run(untilMissionTime: missionTime)
   }
