@@ -15,12 +15,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+public let J2000_EPOCH_IN_UNIX_TIME : Int = 946728000
+public let UNIX_EPOCH_IN_JD : Double = 2440587.5
 
 public class TimeKeeper {
   public var simTime: Int = 0
 
   // epochStartTime tracks the start time in nanoseconds since the UNIX epoch
-  public var epochStartTime: Int = 946724400 * 1000000000 // J2000 epoch by default
+  public var epochStartTime: Int = J2000_EPOCH_IN_UNIX_TIME * 1000000000 // J2000 epoch by default
 
   private var simEpochDifference: Int = 0
 
@@ -74,5 +76,19 @@ public class TimeKeeper {
 
   public func convertToEpochTime(unixTime: Int) -> Int {
     return unixTime - epochStartTime
+  }
+
+  // The marvelous thing is that UNIX time is 86400 secs per day independent of leap seconds
+  public func convertToJD(unixTime: Int) -> Double {
+    return Double(unixTime) / 86400_000_000_000.0 + UNIX_EPOCH_IN_JD
+  }
+  public func convertToJD(epochTime: Int) -> Double {
+    return convertToJD(unixTime: convertToUnixTime(epochTime: epochTime))
+  }
+  public func convertToJD(missionTime: Int) -> Double {
+    return convertToJD(unixTime: convertToUnixTime(missionTime: missionTime))
+  }
+  public func convertToJD(simTime: Int) -> Double {
+    return convertToJD(unixTime: convertToUnixTime(simTime: simTime))
   }
 }

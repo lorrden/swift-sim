@@ -62,7 +62,20 @@ final class TimeKeeperTest: XCTestCase {
     let timeKeeper = TimeKeeper()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
-    XCTAssertEqual(946724400000000000, timeKeeper.convertToUnixTime(epochTime: 0))
-    XCTAssertEqual(0, timeKeeper.convertToUnixTime(epochTime: -946724400000000000))
+    XCTAssertEqual(946728000000000000, timeKeeper.convertToUnixTime(epochTime: 0))
+    XCTAssertEqual(0, timeKeeper.convertToUnixTime(epochTime: -946728000000000000))
+  }
+
+  func testEpochTimeToJD() throws {
+    let timeKeeper = TimeKeeper()
+    timeKeeper.epochTime = 10
+    timeKeeper.missionStartTime = 10
+    XCTAssertEqual(2451545.0, timeKeeper.convertToJD(epochTime: 0))
+  }
+  func testUnixTimeToJD() throws {
+    let timeKeeper = TimeKeeper()
+    timeKeeper.epochTime = 10
+    timeKeeper.missionStartTime = 10
+    XCTAssertEqual(2440587.5, timeKeeper.convertToJD(unixTime: 0))
   }
 }
