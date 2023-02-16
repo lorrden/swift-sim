@@ -86,59 +86,6 @@ public class Scheduler {
 public class EventManager {
 
 }
-public class TimeKeeper {
-  public var simTime: Int = 0
-
-  private var unixEpochDifference: Int = 946724400 * 1000000000 // J2000 epoch by default
-  private var simEpochDifference: Int = 0
-  public var epochTime: Int {
-    get { simTime + simEpochDifference }
-    set { simEpochDifference = newValue - simTime }
-  }
-
-  // MissionTime = EpochTime – MissionStartTime
-  public var missionStartTime = 0
-  public var missionTime: Int {
-    get { epochTime - missionStartTime }
-    set { missionStartTime = epochTime - newValue }
-  }
-
-  // EpochTime = MissionTime + MissionStartTime
-  public func convertToEpochTime(missionTime: Int) -> Int {
-    return missionTime + missionStartTime
-  }
-  // MissionTime = EpochTime - MissionStartTime
-  public func convertToMissionTime(epochTime: Int) -> Int {
-    return epochTime - missionStartTime
-  }
-  // EpochTime = MissionTime + MissionStartTime
-  public func convertToEpochTime(simTime: Int) -> Int {
-    return simTime + simEpochDifference
-  }
-  // MissionTime = EpochTime - MissionStartTime
-  public func convertToMissionTime(simTime: Int) -> Int {
-    return convertToEpochTime(simTime: simTime) - missionStartTime
-  }
-
-  public func convertToSimTime(epochTime: Int) -> Int {
-    return epochTime - simEpochDifference
-  }
-
-  // EpochTime = MissionTime + MissionStartTime
-  public func convertToSimTime(missionTime: Int) -> Int {
-    return convertToSimTime(epochTime: convertToEpochTime(missionTime: missionTime))
-  }
-
-  public func convertToUnixTime(simTime: Int) -> Int {
-    return convertToUnixTime(epochTime: convertToEpochTime(simTime: simTime))
-  }
-  public func convertToUnixTime(missionTime: Int) -> Int {
-    return convertToUnixTime(epochTime: convertToEpochTime(missionTime: missionTime))
-  }
-  public func convertToUnixTime(epochTime: Int) -> Int {
-    return epochTime + unixEpochDifference
-  }
-}
 
 public enum SimError : Error {
   case CannotDelete
