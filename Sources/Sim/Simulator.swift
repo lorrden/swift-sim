@@ -18,11 +18,6 @@
 
 import Foundation
 
-public class EventManager {
-
-}
-
-
 /// Simulator
 ///
 /// The `Simulator` is the main driver in `swift-sim`.
