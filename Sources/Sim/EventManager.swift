@@ -20,10 +20,13 @@ import Foundation
 public class EventManager {
   var events: [[()->()]] = []
   var eventIds : [String:Int] = [:]
-  func queryEventId(eventName: String) -> Int? {
+  public func queryEventId(eventName: String) -> Int? {
     return eventIds[eventName]
   }
-  func publishEvent(eventName: String) throws -> Int {
+  /// Publish an event by name
+  /// - Parameter eventName: Event name
+  /// - Returns: Event ID unless the eventName was a duplicate
+  public func publishEvent(eventName: String) throws -> Int {
     guard !eventIds.keys.contains(eventName) else {
       throw SimError.DuplicateName
     }
@@ -34,26 +37,26 @@ public class EventManager {
     return eventID
   }
 
-  func subscribe(eventName: String,  action: @escaping () -> ()) throws {
+  public func subscribe(eventName: String,  action: @escaping () -> ()) throws {
     guard let id = queryEventId(eventName: eventName) else {
       throw SimError.InvalidEventName
     }
     try subscribe(eventId: id, action: action)
   }
-  func subscribe(eventId: Int, action: @escaping () -> ()) throws {
+  public func subscribe(eventId: Int, action: @escaping () -> ()) throws {
     guard eventId < events.count else {
       throw SimError.InvalidEventId
     }
     events[eventId].append(action)
   }
 
-  func emit(eventName: String) throws {
+  public func emit(eventName: String) throws {
     guard let id = queryEventId(eventName: eventName) else {
       throw SimError.InvalidEventName
     }
     try emit(eventId: id)
   }
-  func emit(eventId: Int) throws {
+  public func emit(eventId: Int) throws {
     guard eventId < events.count else {
       throw SimError.InvalidEventId
     }
