@@ -16,61 +16,82 @@
 // limitations under the License.
 //
 
-public enum LogLevel {
-  case Debug
-  case Trace
-  case Info
-  case Warning
-  case Error
+
+public protocol LogBackend {
+  func log(sender: Model, level: Logger.Level, message: String)
+  var timeKeeper: TimeKeeper { get set }
+  var level: Logger.Level { get set }
 }
+
+class PrintLogger : LogBackend {
+  func log(sender: Model, level: Logger.Level, message: String) {
+    let timeStamp = timeKeeper.getTime(base: timeUnit)
+    let seconds = Double(timeStamp/1000000000) + Double(timeStamp % 1000000000) / 1.0e9
+    print("\(seconds): \(level): \(sender.name): \(message)")
+  }
+  var timeKeeper: TimeKeeper
+  var timeUnit: TimeBase = .SimTime
+  var level: Logger.Level = .Info
+  init(timeKeeper: TimeKeeper) {
+    self.timeKeeper = timeKeeper
+  }
+}
+
 /// Centralized logger
 public class Logger {
+  public enum Level {
+    case Debug
+    case Trace
+    case Info
+    case Warning
+    case Error
+  }
+  var logBackend: LogBackend
   let timeKeeper: TimeKeeper
   var timeUnit: TimeBase = .SimTime
 
   init(timeKeeper: TimeKeeper) {
     self.timeKeeper = timeKeeper
+    self.logBackend = PrintLogger(timeKeeper: timeKeeper)
   }
 
-  func log(sender: Model, level: LogLevel, message: String) {
-    let timeStamp = timeKeeper.getTime(base: timeUnit)
-    let seconds = Double(timeStamp/1000000000) + Double(timeStamp % 1000000000) / 1.0e9
-    print("\(seconds): \(level): \(sender.name): \(message)")
+  func log(sender: Model, level: Logger.Level, message: String) {
+    logBackend.log(sender: sender, level: level, message: message)
   }
 
   /// Log debug messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func logDebug(sender: Model, message: String) {
+  func debug(sender: Model, message: String) {
     log(sender: sender, level: .Debug, message: message)
   }
   /// Log trace messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func logTrace(sender: Model, message: String) {
+  func trace(sender: Model, message: String) {
     log(sender: sender, level: .Trace, message: message)
   }
   /// Log informational messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func logInfo(sender: Model, message: String) {
+  func info(sender: Model, message: String) {
     log(sender: sender, level: .Info, message: message)
   }
   /// Log warning messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func logWarning(sender: Model, message: String) {
+  func warning(sender: Model, message: String) {
     log(sender: sender, level: .Warning, message: message)
   }
   /// Log error messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func logError(sender: Model, message: String) {
+  func error(sender: Model, message: String) {
     log(sender: sender, level: .Error, message: message)
   }
 }
