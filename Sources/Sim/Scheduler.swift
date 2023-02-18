@@ -34,41 +34,75 @@ public class Scheduler {
   private var immediateEvents: [() -> ()] = []
   private var timedEvents: Heap<TimedEvent> = []
 
+  /// Post an immedate event
+  /// - Parameter event: Event handler
   public func postImmediate(event: @escaping () -> ()) {
     immediateEvents.append(event)
   }
+  /// Post an event triggered at a specific simulation time
+  /// - Parameters:
+  ///   - simTime: Simulation time
+  ///   - event: Event handler
   public func post(simTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: simTime, event: event))
   }
+  /// Post an event triggered at a relative time
+  /// - Parameters:
+  ///   - relative: Relative time in seconds
+  ///   - event: Event handler
   public func post(relative: Double, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: Int(relative * 1.0e9), event: event))
+    timedEvents.insert(TimedEvent(time: timeKeeper.simTime + Int(relative * 1.0e9), event: event))
   }
+  /// Post an event trigeered at a specific mission time
+  /// - Parameters:
+  ///   - missionTime: Mission time of even
+  ///   - event: Event handler
   public func post(missionTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: missionTime, event: event))
   }
+  /// Post an event at a specific epoch time
+  /// - Parameters:
+  ///   - epochTime: Epoch time
+  ///   - event: Event handler
   public func post(epochTime: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: epochTime, event: event))
-
   }
-  public func post(simTime: Int, cycle: Int, event: @escaping () -> ()) {
+  /// Post a cyclic event triggered at a specific sim time
+  /// - Parameters:
+  ///   - simTime: Sim time of first triggering
+  ///   - cycle: Cycle in nanoseconds
+  ///   - count: Number of times the event should trigger, for indefinite triggerings set to -1
+  ///   - event: Event handler
+  public func post(simTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: simTime, event: event))
-
   }
-  public func post(missionTime: Int, cycle: Int, event: @escaping () -> ()) {
+  /// Post a cyclic event triggered at a specific mission time
+  /// - Parameters:
+  ///   - missionTime: Mission time of first triggering
+  ///   - cycle: Cycle in nanoseconds
+  ///   - count: Number of times the event should trigger, for indefinete triggering set to -1
+  ///   - event: Event handler
+  public func post(missionTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: missionTime, event: event))
-
   }
-  public func post(epochTime: Int, cycle: Int, event: @escaping () -> ()) {
+  /// Post a cyclic event triggered at a specific epoch time
+  /// - Parameters:
+  ///   - epochTime: Epoch time of first triggering
+  ///   - cycle: Cycle in nanoseconds
+  ///   - count: Number of times the event should trigger, for indefinete triggering set to -1
+  ///   - event: Event handler
+  public func post(epochTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
     timedEvents.insert(TimedEvent(time: epochTime, event: event))
-
   }
 
-  public func runImmediateEvents() {
+  fileprivate func runImmediateEvents() {
     for e in immediateEvents {
       e()
     }
     immediateEvents.removeAll()
   }
+  /// Run scheduler until simulated time
+  /// - Parameter until: Simulated time in nanoseconds
   public func run(until: Int) {
     runImmediateEvents()
 
@@ -80,20 +114,28 @@ public class Scheduler {
     }
     timeKeeper.simTime = until
   }
+  /// Run scheduler until epoch time
+  /// - Parameter epochTime: Epoch time in nanoseconds
   public func run(untilEpochTime epochTime: Int) {
     let simTime = timeKeeper.convertToSimTime(epochTime: epochTime)
     run(until: simTime)
   }
+  /// Run scheduler until mission time
+  /// - Parameter missionTime: Mission time in nanoseconds
   public func run(untilMissionTime missionTime: Int) {
     let simTime = timeKeeper.convertToSimTime(missionTime: missionTime)
     run(until: simTime)
   }
+  /// Run scheduler for a fixed number of nanoseconds
+  /// - Parameter delta: Relative number of nanoseconds to run the scheduler
   public func run(for delta: Int) {
     let endTime = timeKeeper.simTime + delta
     run(until: endTime)
   }
 
-  let timeKeeper: TimeKeeper
+  fileprivate let timeKeeper: TimeKeeper
+  /// Create a new scheduler
+  /// - Parameter timeKeeper: Time keeper used by scheduler
   public init(withTimeKeeper timeKeeper: TimeKeeper) {
     self.timeKeeper = timeKeeper
   }

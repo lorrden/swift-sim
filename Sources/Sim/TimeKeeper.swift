@@ -18,6 +18,13 @@
 public let J2000_EPOCH_IN_UNIX_TIME : Int = 946728000
 public let UNIX_EPOCH_IN_JD : Double = 2440587.5
 
+public enum TimeBase {
+  case UnixTime
+  case EpochTime
+  case SimTime
+  case MissionTime
+}
+
 /// Manages simulation, mission and epoch time
 ///
 /// The `TimeKeeper` works with simulation, epoch and mission time in nanoseconds.
@@ -28,6 +35,9 @@ public let UNIX_EPOCH_IN_JD : Double = 2440587.5
 /// - Mission Time is related to epoch time and provides a mission specific time (e.g. T -/+ n)
 
 public class TimeKeeper {
+  public var unixTime: Int {
+    get { convertToUnixTime(simTime: simTime)}
+  }
   public var simTime: Int = 0
 
   /// Epoch offset in nanoseconds from the UNIX epoch
@@ -142,5 +152,18 @@ public class TimeKeeper {
   /// - Returns: Julian date
   public func convertToJD(simTime: Int) -> Double {
     return convertToJD(unixTime: convertToUnixTime(simTime: simTime))
+  }
+
+  public func getTime(base: TimeBase) -> Int {
+    switch base {
+    case .EpochTime:
+      return epochTime
+    case .MissionTime:
+      return missionTime
+    case .SimTime:
+      return simTime
+    case .UnixTime:
+      return unixTime
+    }
   }
 }
