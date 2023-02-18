@@ -23,23 +23,53 @@ public enum LogLevel {
   case Warning
   case Error
 }
+/// Centralized logger
 public class Logger {
-  func log(sender: Model, level: LogLevel, message: String) {
-    print("\(level): \(sender.name): \(message)")
+  let timeKeeper: TimeKeeper
+  var timeUnit: TimeBase = .SimTime
+
+  init(timeKeeper: TimeKeeper) {
+    self.timeKeeper = timeKeeper
   }
 
+  func log(sender: Model, level: LogLevel, message: String) {
+    let timeStamp = timeKeeper.getTime(base: timeUnit)
+    let seconds = Double(timeStamp/1000000000) + Double(timeStamp % 1000000000) / 1.0e9
+    print("\(seconds): \(level): \(sender.name): \(message)")
+  }
+
+  /// Log debug messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
   func logDebug(sender: Model, message: String) {
     log(sender: sender, level: .Debug, message: message)
   }
+  /// Log trace messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
   func logTrace(sender: Model, message: String) {
     log(sender: sender, level: .Trace, message: message)
   }
+  /// Log informational messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
   func logInfo(sender: Model, message: String) {
     log(sender: sender, level: .Info, message: message)
   }
+  /// Log warning messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
   func logWarning(sender: Model, message: String) {
     log(sender: sender, level: .Warning, message: message)
   }
+  /// Log error messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
   func logError(sender: Model, message: String) {
     log(sender: sender, level: .Error, message: message)
   }

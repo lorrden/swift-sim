@@ -39,8 +39,8 @@ public class Simulator {
 
   /// Create a new `Simulator`
   public init() {
-    self.logger = Logger()
     self.timeKeeper = TimeKeeper()
+    self.logger = Logger(timeKeeper: self.timeKeeper)
     self.scheduler = Scheduler(withTimeKeeper: self.timeKeeper)
     self.eventManager = EventManager()
     self.models = [:]
