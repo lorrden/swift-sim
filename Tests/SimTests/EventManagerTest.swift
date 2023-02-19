@@ -50,12 +50,12 @@ final class EventManagerTest: XCTestCase {
       XCTAssertEqual(error as! SimError, SimError.InvalidEventId)
     }
   }
-  func testEmit() throws {
+  func testEmitAndSubscribe() throws {
     let eventManager = EventManager()
-    let fooId = try eventManager.publishEvent(eventName: "foo")
+    let _ = try eventManager.publishEvent(eventName: "foo")
 
     var wasInvoked = false
-    try eventManager.subscribe(eventId: fooId) {
+    try eventManager.subscribe(eventName: "foo") {
       wasInvoked = true
     }
 

@@ -57,6 +57,20 @@ final class TimeKeeperTest: XCTestCase {
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(20, timeKeeper.convertToEpochTime(simTime:  10))
   }
+  func testSimTimeToUnixTime() throws {
+    let timeKeeper = TimeKeeper()
+    timeKeeper.epochTime = 10
+    timeKeeper.missionStartTime = 10
+    XCTAssertEqual(946728000000000010, timeKeeper.convertToUnixTime(simTime: 0))
+    XCTAssertEqual(10, timeKeeper.convertToUnixTime(simTime: -946728000000000000))
+  }
+  func testMissionTimeToUnixTime() throws {
+    let timeKeeper = TimeKeeper()
+    timeKeeper.epochTime = 10
+    timeKeeper.missionStartTime = 20
+    XCTAssertEqual(946728000000000020, timeKeeper.convertToUnixTime(missionTime: 0))
+    XCTAssertEqual(20, timeKeeper.convertToUnixTime(missionTime: -946728000000000000))
+  }
 
   func testEpochTimeToUnixTime() throws {
     let timeKeeper = TimeKeeper()
@@ -72,10 +86,33 @@ final class TimeKeeperTest: XCTestCase {
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(2451545.0, timeKeeper.convertToJD(epochTime: 0))
   }
+  func testMissionTimeToJD() throws {
+    let timeKeeper = TimeKeeper()
+    timeKeeper.missionStartTime = 10000000000
+    XCTAssertEqual(2451545.000115, timeKeeper.convertToJD(missionTime: 0), accuracy: 0.000005)
+  }
+  func testSimTimeToJD() throws {
+    let timeKeeper = TimeKeeper()
+    XCTAssertEqual(2451545.0, timeKeeper.convertToJD(simTime: 0))
+  }
+
   func testUnixTimeToJD() throws {
     let timeKeeper = TimeKeeper()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(2440587.5, timeKeeper.convertToJD(unixTime: 0))
+  }
+  func testUnixTimeToEpochTime() throws {
+    let timeKeeper = TimeKeeper()
+    XCTAssertEqual(-946728000000000000, timeKeeper.convertToEpochTime(unixTime: 0))
+    XCTAssertEqual(0, timeKeeper.convertToEpochTime(unixTime: 946728000000000000))
+  }
+
+  func testGetTime() throws {
+    let timeKeeper = TimeKeeper()
+    XCTAssertEqual(0, timeKeeper.getTime(base: .SimTime))
+    XCTAssertEqual(0, timeKeeper.getTime(base: .MissionTime))
+    XCTAssertEqual(0, timeKeeper.getTime(base: .EpochTime))
+    XCTAssertEqual(946728000000000000, timeKeeper.getTime(base: .UnixTime))
   }
 }
