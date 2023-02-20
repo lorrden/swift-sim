@@ -15,6 +15,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
+import Foundation
+
 public let J2000_EPOCH_IN_UNIX_TIME : Int = 946728000
 public let UNIX_EPOCH_IN_JD : Double = 2440587.5
 
@@ -166,4 +169,26 @@ public class TimeKeeper {
       return unixTime
     }
   }
+
+  public func convertToCalendarDate(epochTime: Int) -> Date {
+    let unixTime = convertToUnixTime(epochTime: epochTime)
+    let interval = Double(unixTime)/1000000000.0
+    return Date(timeIntervalSince1970: interval)
+  }
+
+  public func convertToCalendarDate(simTime: Int) -> Date {
+    let unixTime = convertToUnixTime(simTime: epochTime)
+    let interval = Double(unixTime)/1000000000.0
+    return Date(timeIntervalSince1970: interval)
+  }
+  public func convertToCalendarDate(missionTime: Int) -> Date {
+    let unixTime = convertToUnixTime(missionTime: epochTime)
+    let interval = Double(unixTime)/1000000000.0
+    return Date(timeIntervalSince1970: interval)
+  }
+  public func convertToCalendarDate(unixTime: Int) -> Date {
+    let interval = Double(unixTime)/1000000000.0
+    return Date(timeIntervalSince1970: interval)
+  }
+
 }

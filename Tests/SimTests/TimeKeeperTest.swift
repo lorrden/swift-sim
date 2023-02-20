@@ -115,4 +115,43 @@ final class TimeKeeperTest: XCTestCase {
     XCTAssertEqual(0, timeKeeper.getTime(base: .EpochTime))
     XCTAssertEqual(946728000000000000, timeKeeper.getTime(base: .UnixTime))
   }
+
+  func testConvertEpochTimeToFoundationDate() throws {
+    let timeKeeper = TimeKeeper()
+
+    let date = timeKeeper.convertToCalendarDate(epochTime: 0)
+    let formatter = ISO8601DateFormatter()
+    let dateString = formatter.string(from: date)
+
+    XCTAssertEqual("2000-01-01T12:00:00Z", dateString)
+  }
+
+  func testConvertSimTimeToFoundationDate() throws {
+    let timeKeeper = TimeKeeper()
+
+    let date = timeKeeper.convertToCalendarDate(simTime: 0)
+    let formatter = ISO8601DateFormatter()
+    let dateString = formatter.string(from: date)
+
+    XCTAssertEqual("2000-01-01T12:00:00Z", dateString)
+  }
+  func testConvertMissionTimeToFoundationDate() throws {
+    let timeKeeper = TimeKeeper()
+
+    let date = timeKeeper.convertToCalendarDate(missionTime: 0)
+    let formatter = ISO8601DateFormatter()
+    let dateString = formatter.string(from: date)
+
+    XCTAssertEqual("2000-01-01T12:00:00Z", dateString)
+  }
+  func testConvertUnixTimeToFoundationDate() throws {
+    let timeKeeper = TimeKeeper()
+
+    let date = timeKeeper.convertToCalendarDate(unixTime: 0)
+    let formatter = ISO8601DateFormatter()
+    let dateString = formatter.string(from: date)
+
+    XCTAssertEqual("1970-01-01T00:00:00Z", dateString)
+  }
+
 }
