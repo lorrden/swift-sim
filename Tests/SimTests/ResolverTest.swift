@@ -35,6 +35,7 @@ final class ResolverTest: XCTestCase {
     XCTAssertIdentical(c, sim.resolver.resolve(absolute: "/a/c"))
     XCTAssertIdentical(nil, sim.resolver.resolve(absolute: "/x"))
     XCTAssertIdentical(nil, sim.resolver.resolve(absolute: "/a/y"))
+    XCTAssertIdentical(a, sim.resolver.resolve(absolute: "/a/c/../"))
   }
 
 
