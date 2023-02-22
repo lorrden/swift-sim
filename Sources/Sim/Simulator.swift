@@ -28,6 +28,7 @@ public class Simulator {
   public var eventManager : EventManager
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
+  public var resolver: Resolver!
   /// Add root model
   /// - Parameter model: Root model to add in the simulator
   public func add(model: Model) throws {
@@ -44,6 +45,7 @@ public class Simulator {
     self.scheduler = Scheduler(withTimeKeeper: self.timeKeeper)
     self.eventManager = EventManager()
     self.models = [:]
+    self.resolver = Resolver(sim: self)
   }
 
   /// Run simulation for a relative time mission time

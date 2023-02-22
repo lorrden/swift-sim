@@ -19,8 +19,21 @@
 import Foundation
 
 open class Model {
+  weak var parent: Model?
+  var children: [String : Model]
   let name: String
+
   public init(name: String) {
     self.name = name
+    self.children = [:]
+  }
+
+  public func add(child: Model) {
+    children[child.name] = child
+    child.parent = self
+  }
+  public func add(child: Model, name withName: String) {
+    children[name] = child
+    child.parent = self
   }
 }
