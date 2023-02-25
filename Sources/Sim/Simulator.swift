@@ -18,32 +18,53 @@
 
 import Foundation
 
+public protocol Simulator : AnyObject {
+  var logger : Logger { get }
+  var scheduler : Scheduler { get }
+  var eventManager : EventManager { get }
+  var timeKeeper : TimeKeeper { get }
+  var resolver: Resolver { get }
+
+  func run(for delta: Int)
+  func run(until: Int)
+  func run(untilEpochTime epochTime: Int)
+  func run(untilMissionTime missionTime: Int)
+
+  func add(model: Model) throws
+  func add(service: Service) throws
+  func add(model: Model, withName name: String) throws
+  func add(service: Service, withName name: String) throws
+
+  func getRootModel(name: String) -> Model?
+  func getService(name: String) -> Service?
+}
+
 /// Simulator
 ///
 /// The `Simulator` is the main driver in `swift-sim`.
 /// The `Simulator` manages the simulation tree, and exposes functions to run the simulation.
-public class Simulator {
+public class SimulatorImpl: Simulator {
   public var logger : Logger
   public var scheduler : Scheduler
   public var eventManager : EventManager
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
-  public var resolver: Resolver!
+  public var resolver: Resolver
   public var services : [String : Service]
 
   /// Create a new `Simulator`
   public init() {
-    self.timeKeeper = TimeKeeper()
-    self.logger = Logger(timeKeeper: self.timeKeeper)
-    self.scheduler = Scheduler(withTimeKeeper: self.timeKeeper)
-    self.eventManager = EventManager()
+    self.timeKeeper = TimeKeeperImpl()
+    self.logger = LoggerImpl(timeKeeper: self.timeKeeper)
+    self.scheduler = SchedulerImpl(withTimeKeeper: self.timeKeeper)
+    self.eventManager = EventManagerImpl()
     self.models = [:]
     self.services = [:]
 
-    self.resolver = Resolver()
+    self.resolver = ResolverImpl()
 
-    try! add(service: self.timeKeeper)
     try! add(service: self.logger)
+    try! add(service: self.timeKeeper)
     try! add(service: self.scheduler)
     try! add(service: self.eventManager)
     try! add(service: self.resolver)

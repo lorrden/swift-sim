@@ -21,51 +21,51 @@ import XCTest
 
 final class TimeKeeperTest: XCTestCase {
   func testEpochToMissionTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
 
     XCTAssertEqual(0, timeKeeper.convertToMissionTime(epochTime: 10))
   }
   func testEpochToSimTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(0, timeKeeper.convertToSimTime(epochTime: 10))
   }
   func testMissionToSimTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(10, timeKeeper.convertToSimTime(missionTime: 10))
   }
   func testMissionToEpochTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(20, timeKeeper.convertToEpochTime(missionTime: 10))
   }
   func testSimToMissionTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(10, timeKeeper.convertToMissionTime(simTime: 10))
   }
   func testSimToEpochTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(20, timeKeeper.convertToEpochTime(simTime:  10))
   }
   func testSimTimeToUnixTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(946728000000000010, timeKeeper.convertToUnixTime(simTime: 0))
     XCTAssertEqual(10, timeKeeper.convertToUnixTime(simTime: -946728000000000000))
   }
   func testMissionTimeToUnixTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 20
     XCTAssertEqual(946728000000000020, timeKeeper.convertToUnixTime(missionTime: 0))
@@ -73,7 +73,7 @@ final class TimeKeeperTest: XCTestCase {
   }
 
   func testEpochTimeToUnixTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(946728000000000000, timeKeeper.convertToUnixTime(epochTime: 0))
@@ -81,35 +81,35 @@ final class TimeKeeperTest: XCTestCase {
   }
 
   func testEpochTimeToJD() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(2451545.0, timeKeeper.convertToJD(epochTime: 0))
   }
   func testMissionTimeToJD() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.missionStartTime = 10000000000
     XCTAssertEqual(2451545.000115, timeKeeper.convertToJD(missionTime: 0), accuracy: 0.000005)
   }
   func testSimTimeToJD() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     XCTAssertEqual(2451545.0, timeKeeper.convertToJD(simTime: 0))
   }
 
   func testUnixTimeToJD() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     timeKeeper.epochTime = 10
     timeKeeper.missionStartTime = 10
     XCTAssertEqual(2440587.5, timeKeeper.convertToJD(unixTime: 0))
   }
   func testUnixTimeToEpochTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     XCTAssertEqual(-946728000000000000, timeKeeper.convertToEpochTime(unixTime: 0))
     XCTAssertEqual(0, timeKeeper.convertToEpochTime(unixTime: 946728000000000000))
   }
 
   func testGetTime() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     XCTAssertEqual(0, timeKeeper.getTime(base: .SimTime))
     XCTAssertEqual(0, timeKeeper.getTime(base: .MissionTime))
     XCTAssertEqual(0, timeKeeper.getTime(base: .EpochTime))
@@ -117,7 +117,7 @@ final class TimeKeeperTest: XCTestCase {
   }
 
   func testConvertEpochTimeToFoundationDate() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
 
     let date = timeKeeper.convertToCalendarDate(epochTime: 0)
     let formatter = ISO8601DateFormatter()
@@ -127,7 +127,7 @@ final class TimeKeeperTest: XCTestCase {
   }
 
   func testConvertSimTimeToFoundationDate() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
 
     let date = timeKeeper.convertToCalendarDate(simTime: 0)
     let formatter = ISO8601DateFormatter()
@@ -136,7 +136,7 @@ final class TimeKeeperTest: XCTestCase {
     XCTAssertEqual("2000-01-01T12:00:00Z", dateString)
   }
   func testConvertMissionTimeToFoundationDate() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
 
     let date = timeKeeper.convertToCalendarDate(missionTime: 0)
     let formatter = ISO8601DateFormatter()
@@ -145,7 +145,7 @@ final class TimeKeeperTest: XCTestCase {
     XCTAssertEqual("2000-01-01T12:00:00Z", dateString)
   }
   func testConvertUnixTimeToFoundationDate() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
 
     let date = timeKeeper.convertToCalendarDate(unixTime: 0)
     let formatter = ISO8601DateFormatter()
@@ -153,5 +153,4 @@ final class TimeKeeperTest: XCTestCase {
 
     XCTAssertEqual("1970-01-01T00:00:00Z", dateString)
   }
-
 }

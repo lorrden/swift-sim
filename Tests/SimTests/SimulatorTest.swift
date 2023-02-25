@@ -27,7 +27,7 @@ class Foo : Model {
 final class SimulatorTest: XCTestCase {
     func testScheduler() throws {
       var wasCalled: Bool = false
-      let sim = Simulator()
+      let sim = SimulatorImpl()
 
       sim.scheduler.postImmediate() {
         wasCalled = true;
@@ -51,7 +51,7 @@ final class SimulatorTest: XCTestCase {
     }
 
   func testAddModel() throws {
-    let sim = Simulator()
+    let sim = SimulatorImpl()
     XCTAssertNoThrow(try sim.add(model: Foo(name: "foo")))
     XCTAssertThrowsError(try sim.add(model: Foo(name: "foo"))) { error in
       XCTAssertEqual(error as! SimError, SimError.DuplicateName)

@@ -27,14 +27,14 @@ fileprivate class NamedModel : Model {
 
 
 class TestLogger : LogBackend {
-  func log(sender: Model, level: Logger.Level, message: String) {
+  func log(sender: Model, level: LogLevel, message: String) {
     let timeStamp = timeKeeper.getTime(base: timeUnit)
     let seconds = Double(timeStamp/1000000000) + Double(timeStamp % 1000000000) / 1.0e9
     self.message = "\(seconds): \(level): \(sender.name): \(message)"
   }
   var timeKeeper: TimeKeeper
   var timeUnit: TimeBase = .SimTime
-  var level: Logger.Level = .Info
+  var level: LogLevel = .Info
   init(timeKeeper: TimeKeeper) {
     self.timeKeeper = timeKeeper
   }
@@ -44,9 +44,9 @@ class TestLogger : LogBackend {
 
 final class LoggerTest: XCTestCase {
   func testLogDebug() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     let loggerBackend = TestLogger(timeKeeper: timeKeeper)
-    let logger = Logger(timeKeeper: timeKeeper)
+    let logger = LoggerImpl(timeKeeper: timeKeeper)
     logger.logBackend = loggerBackend
     loggerBackend.level = .Debug
     let foo = NamedModel(name: "foo")
@@ -56,9 +56,9 @@ final class LoggerTest: XCTestCase {
   }
 
   func testLogTrace() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     let loggerBackend = TestLogger(timeKeeper: timeKeeper)
-    let logger = Logger(timeKeeper: timeKeeper)
+    let logger = LoggerImpl(timeKeeper: timeKeeper)
     logger.logBackend = loggerBackend
     loggerBackend.level = .Debug
     let foo = NamedModel(name: "foo")
@@ -69,9 +69,9 @@ final class LoggerTest: XCTestCase {
 
 
   func testLogInfo() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     let loggerBackend = TestLogger(timeKeeper: timeKeeper)
-    let logger = Logger(timeKeeper: timeKeeper)
+    let logger = LoggerImpl(timeKeeper: timeKeeper)
     logger.logBackend = loggerBackend
     let foo = NamedModel(name: "foo")
     logger.info(sender: foo, message: "my message")
@@ -80,9 +80,9 @@ final class LoggerTest: XCTestCase {
   }
 
   func testLogWarning() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     let loggerBackend = TestLogger(timeKeeper: timeKeeper)
-    let logger = Logger(timeKeeper: timeKeeper)
+    let logger = LoggerImpl(timeKeeper: timeKeeper)
     logger.logBackend = loggerBackend
     let foo = NamedModel(name: "foo")
     logger.warning(sender: foo, message: "my message")
@@ -91,9 +91,9 @@ final class LoggerTest: XCTestCase {
   }
 
   func testLogError() throws {
-    let timeKeeper = TimeKeeper()
+    let timeKeeper = TimeKeeperImpl()
     let loggerBackend = TestLogger(timeKeeper: timeKeeper)
-    let logger = Logger(timeKeeper: timeKeeper)
+    let logger = LoggerImpl(timeKeeper: timeKeeper)
     logger.logBackend = loggerBackend
     let foo = NamedModel(name: "foo")
     logger.error(sender: foo, message: "my message")

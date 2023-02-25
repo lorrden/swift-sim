@@ -21,7 +21,7 @@ import XCTest
 
 final class EventManagerTest: XCTestCase {
   func testPublication() throws {
-    let eventManager = EventManager()
+    let eventManager = EventManagerImpl()
     XCTAssertNoThrow(try eventManager.publishEvent(eventName: "foo"))
     XCTAssertThrowsError(try eventManager.publishEvent(eventName: "foo")) { error in
       XCTAssertEqual(error as! SimError, SimError.DuplicateName)
@@ -31,7 +31,7 @@ final class EventManagerTest: XCTestCase {
   }
 
   func testSubscribe() throws {
-    let eventManager = EventManager()
+    let eventManager = EventManagerImpl()
     XCTAssertThrowsError(try eventManager.subscribe(eventName: "foo", action: {})) { error in
       XCTAssertEqual(error as! SimError, SimError.InvalidEventName)
     }
@@ -41,7 +41,7 @@ final class EventManagerTest: XCTestCase {
     }
   }
   func testEmitFailures() throws {
-    let eventManager = EventManager()
+    let eventManager = EventManagerImpl()
     XCTAssertThrowsError(try eventManager.emit(eventName: "foo")) { error in
       XCTAssertEqual(error as! SimError, SimError.InvalidEventName)
     }
@@ -51,7 +51,7 @@ final class EventManagerTest: XCTestCase {
     }
   }
   func testEmitAndSubscribe() throws {
-    let eventManager = EventManager()
+    let eventManager = EventManagerImpl()
     let _ = try eventManager.publishEvent(eventName: "foo")
 
     var wasInvoked = false

@@ -18,7 +18,7 @@
 
 import Foundation
 
-public protocol EventManagerProt : Service {
+public protocol EventManager : Service {
   func queryEventId(eventName: String) -> Int?
   func publishEvent(eventName: String) throws -> Int
   func subscribe(eventName: String,  action: @escaping () -> ()) throws
@@ -27,7 +27,7 @@ public protocol EventManagerProt : Service {
   func emit(eventId: Int) throws
 }
 
-public class EventManager : EventManagerProt, Service {
+class EventManagerImpl : EventManager, Service {
   public var name: String = "EventManager"
   public weak var sim: Simulator!
 

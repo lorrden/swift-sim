@@ -18,7 +18,7 @@
 
 import Foundation
 
-public protocol ResolverProt : Service {
+public protocol Resolver : Service {
   func resolve(absolute: String) -> Model?
   func resolve(relative: String, source: Model) -> Model?
 }
@@ -28,7 +28,7 @@ public protocol ResolverProt : Service {
 /// Looking for /foo/bar will return the submodel of foo called bar.
 /// Path expressions resolve to models, not fields in the models.
 /// Path expressions support `..` and `.` meaning parent or this model.
-public class Resolver : ResolverProt, Service {
+class ResolverImpl : Resolver, Service {
   public var name: String = "Resolver"
   public weak var sim: Simulator!
 
@@ -38,7 +38,7 @@ public class Resolver : ResolverProt, Service {
   public func resolve(absolute: String) -> Model? {
     let components = absolute.split(separator: "/")
 
-    var cursor: Model? = sim.models[String(components[0])]
+    var cursor: Model? = sim.getRootModel(name: String(components[0]))
 
     for component in components[1...] {
       if component == ".." {
@@ -73,7 +73,7 @@ public class Resolver : ResolverProt, Service {
       } else if component != "." {
         // For non self references go up
         if atRoot {
-          cursor = sim.models[String(component)]
+          cursor = sim.getRootModel(name: String(component))
           atRoot = false
         } else {
           cursor = cursor?.children[String(component)]

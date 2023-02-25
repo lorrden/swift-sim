@@ -17,26 +17,33 @@
 //
 
 public protocol LogBackend {
-  func log(sender: Model, level: Logger.Level, message: String)
+  func log(sender: Model, level: LogLevel, message: String)
   var timeKeeper: TimeKeeper { get set }
-  var level: Logger.Level { get set }
+  var level: LogLevel { get set }
 }
 
 class PrintLogger : LogBackend {
-  func log(sender: Model, level: Logger.Level, message: String) {
+  func log(sender: Model, level: LogLevel, message: String) {
     let timeStamp = timeKeeper.getTime(base: timeUnit)
     let seconds = Double(timeStamp/1000000000) + Double(timeStamp % 1000000000) / 1.0e9
     print("\(seconds): \(level): \(sender.name): \(message)")
   }
   var timeKeeper: TimeKeeper
   var timeUnit: TimeBase = .SimTime
-  var level: Logger.Level = .Info
+  var level: LogLevel = .Info
   init(timeKeeper: TimeKeeper) {
     self.timeKeeper = timeKeeper
   }
 }
+public enum LogLevel {
+  case Debug
+  case Trace
+  case Info
+  case Warning
+  case Error
+}
+public protocol Logger : Service {
 
-public protocol LoggerProt : Service {
   /// Log debug messages
   /// - Parameters:
   ///   - sender: Model emitting the message
@@ -66,17 +73,10 @@ public protocol LoggerProt : Service {
 }
 
 /// Centralized logger
-public class Logger : LoggerProt, Service {
+class LoggerImpl : Logger, Service {
   public var name: String = "Logger"
   public weak var sim: Simulator!
 
-  public enum Level {
-    case Debug
-    case Trace
-    case Info
-    case Warning
-    case Error
-  }
   var logBackend: LogBackend
   let timeKeeper: TimeKeeper
   var timeUnit: TimeBase = .SimTime
@@ -86,7 +86,7 @@ public class Logger : LoggerProt, Service {
     self.logBackend = PrintLogger(timeKeeper: timeKeeper)
   }
 
-  func log(sender: Model, level: Logger.Level, message: String) {
+  func log(sender: Model, level: LogLevel, message: String) {
     logBackend.log(sender: sender, level: level, message: message)
   }
 
@@ -126,3 +126,4 @@ public class Logger : LoggerProt, Service {
     log(sender: sender, level: .Error, message: message)
   }
 }
+

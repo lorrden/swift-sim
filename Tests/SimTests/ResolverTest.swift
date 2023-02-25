@@ -23,7 +23,7 @@ import XCTest
 
 final class ResolverTest: XCTestCase {
   func testResolveAbsolute() throws {
-    let sim = Simulator()
+    let sim = SimulatorImpl()
     let a = Model(name: "a")
     let b = Model(name: "b")
     let c = Model(name: "c")
@@ -40,7 +40,7 @@ final class ResolverTest: XCTestCase {
 
 
   func testResolveRelative() throws {
-    let sim = Simulator()
+    let sim = SimulatorImpl()
     let a = Model(name: "a")
     let b = Model(name: "b")
     let c = Model(name: "c")

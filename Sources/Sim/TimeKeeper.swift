@@ -28,24 +28,40 @@ public enum TimeBase {
   case MissionTime
 }
 
-public protocol TimeKeeperProt: Service {
+public protocol TimeKeeper: Service {
   var unixTime: Int { get }
   var simTime: Int { get set }
   var epochTime: Int { get set }
   var missionStartTime: Int { get set }
   var missionTime: Int { get set }
+  func getTime(base: TimeBase) -> Int
+
+
+  func convertToEpochTime(missionTime: Int) -> Int
+  func convertToMissionTime(epochTime: Int) -> Int
+  func convertToEpochTime(simTime: Int) -> Int
+  func convertToMissionTime(simTime: Int) -> Int
+  func convertToSimTime(epochTime: Int) -> Int
+  func convertToSimTime(missionTime: Int) -> Int
+  func convertToUnixTime(simTime: Int) -> Int
+  func convertToUnixTime(missionTime: Int) -> Int
+  func convertToUnixTime(epochTime: Int) -> Int
+  func convertToEpochTime(unixTime: Int) -> Int
+  func convertToJD(unixTime: Int) -> Double
+  func convertToJD(epochTime: Int) -> Double
+  func convertToJD(missionTime: Int) -> Double
+  func convertToJD(simTime: Int) -> Double
 }
 
 /// Manages simulation, mission and epoch time
 ///
-/// The `TimeKeeper` works with simulation, epoch and mission time in nanoseconds.
+/// The `TimeKeeperImpl` works with simulation, epoch and mission time in nanoseconds.
 /// The different times are related as follows:
 ///
 /// - Simulation Time starts with 0 when the simulation is initialized. It is the time base used internally for events etc.
 /// - Epoch Time relates the simulation time to a speciific epoch (e.g. the epoch could be that of J2000 or the UNIX epoch), in addition the epoch time is related to the UNIX epoch with a fixed offset. This in turn enables the conversion into human readable dates.
 /// - Mission Time is related to epoch time and provides a mission specific time (e.g. T -/+ n)
-
-public class TimeKeeper : TimeKeeperProt, Service {
+class TimeKeeperImpl : TimeKeeper, Service {
   public var name: String = "TimeKeeper"
   public weak var sim: Simulator!
 

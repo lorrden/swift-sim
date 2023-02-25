@@ -30,15 +30,22 @@ struct TimedEvent: Comparable {
   }
 }
 
-public protocol SchedulerProt: Service {
+public protocol Scheduler: Service {
   func postImmediate(event: @escaping () -> ())
   func post(simTime: Int, event: @escaping () -> ())
   func post(relative: Double, event: @escaping () -> ())
   func post(missionTime: Int, event: @escaping () -> ())
   func post(epochTime: Int, event: @escaping () -> ())
+  func post(simTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
+  func post(missionTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
+  func post(epochTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
+  func run(for delta: Int)
+  func run(until: Int)
+  func run(untilEpochTime epochTime: Int)
+  func run(untilMissionTime missionTime: Int)
 }
 
-public class Scheduler: SchedulerProt, Service {
+class SchedulerImpl: Scheduler, Service {
   public var name: String = "Scheduler"
   public weak var sim: Simulator!
 
