@@ -18,12 +18,17 @@
 
 import Foundation
 
+public protocol ResolverProt : Service {
+  func resolve(absolute: String) -> Model?
+  func resolve(relative: String, source: Model) -> Model?
+}
+
 /// Resolves simulation paths
 /// Paths can be either absolute (starting with /) or relative with respect to a model.
 /// Looking for /foo/bar will return the submodel of foo called bar.
 /// Path expressions resolve to models, not fields in the models.
 /// Path expressions support `..` and `.` meaning parent or this model.
-public class Resolver : Service {
+public class Resolver : ResolverProt, Service {
   public var name: String = "Resolver"
   public weak var sim: Simulator!
 

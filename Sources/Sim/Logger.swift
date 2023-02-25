@@ -16,7 +16,6 @@
 // limitations under the License.
 //
 
-
 public protocol LogBackend {
   func log(sender: Model, level: Logger.Level, message: String)
   var timeKeeper: TimeKeeper { get set }
@@ -37,11 +36,39 @@ class PrintLogger : LogBackend {
   }
 }
 
+public protocol LoggerProt : Service {
+  /// Log debug messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
+  func debug(sender: Model, message: String)
+
+  /// Log trace messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
+  func trace(sender: Model, message: String)
+  /// Log informational messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
+  func info(sender: Model, message: String)
+  /// Log warning messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
+  func warning(sender: Model, message: String)
+  /// Log error messages
+  /// - Parameters:
+  ///   - sender: Model emitting the message
+  ///   - message: Message
+  func error(sender: Model, message: String)
+}
+
 /// Centralized logger
-public class Logger : Service {
+public class Logger : LoggerProt, Service {
   public var name: String = "Logger"
   public weak var sim: Simulator!
-
 
   public enum Level {
     case Debug
@@ -67,35 +94,35 @@ public class Logger : Service {
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func debug(sender: Model, message: String) {
+  public func debug(sender: Model, message: String) {
     log(sender: sender, level: .Debug, message: message)
   }
   /// Log trace messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func trace(sender: Model, message: String) {
+  public func trace(sender: Model, message: String) {
     log(sender: sender, level: .Trace, message: message)
   }
   /// Log informational messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func info(sender: Model, message: String) {
+  public func info(sender: Model, message: String) {
     log(sender: sender, level: .Info, message: message)
   }
   /// Log warning messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func warning(sender: Model, message: String) {
+  public func warning(sender: Model, message: String) {
     log(sender: sender, level: .Warning, message: message)
   }
   /// Log error messages
   /// - Parameters:
   ///   - sender: Model emitting the message
   ///   - message: Message
-  func error(sender: Model, message: String) {
+  public func error(sender: Model, message: String) {
     log(sender: sender, level: .Error, message: message)
   }
 }

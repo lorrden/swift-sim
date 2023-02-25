@@ -28,6 +28,14 @@ public enum TimeBase {
   case MissionTime
 }
 
+public protocol TimeKeeperProt: Service {
+  var unixTime: Int { get }
+  var simTime: Int { get set }
+  var epochTime: Int { get set }
+  var missionStartTime: Int { get set }
+  var missionTime: Int { get set }
+}
+
 /// Manages simulation, mission and epoch time
 ///
 /// The `TimeKeeper` works with simulation, epoch and mission time in nanoseconds.
@@ -37,7 +45,7 @@ public enum TimeBase {
 /// - Epoch Time relates the simulation time to a speciific epoch (e.g. the epoch could be that of J2000 or the UNIX epoch), in addition the epoch time is related to the UNIX epoch with a fixed offset. This in turn enables the conversion into human readable dates.
 /// - Mission Time is related to epoch time and provides a mission specific time (e.g. T -/+ n)
 
-public class TimeKeeper : Service {
+public class TimeKeeper : TimeKeeperProt, Service {
   public var name: String = "TimeKeeper"
   public weak var sim: Simulator!
 
