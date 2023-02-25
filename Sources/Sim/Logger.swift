@@ -38,7 +38,11 @@ class PrintLogger : LogBackend {
 }
 
 /// Centralized logger
-public class Logger {
+public class Logger : Service {
+  public var name: String = "Logger"
+  public weak var sim: Simulator!
+
+
   public enum Level {
     case Debug
     case Trace

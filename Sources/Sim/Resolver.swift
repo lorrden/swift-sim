@@ -23,12 +23,9 @@ import Foundation
 /// Looking for /foo/bar will return the submodel of foo called bar.
 /// Path expressions resolve to models, not fields in the models.
 /// Path expressions support `..` and `.` meaning parent or this model.
-public class Resolver {
-  weak var sim: Simulator!
-  init(sim: Simulator)
-  {
-    self.sim = sim
-  }
+public class Resolver : Service {
+  public var name: String = "Resolver"
+  public weak var sim: Simulator!
 
   /// Resolve absolute path in the simulation tree
   /// - Parameter absolute: Absolute path starting with `/`

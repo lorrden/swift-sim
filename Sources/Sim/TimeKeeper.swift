@@ -37,7 +37,10 @@ public enum TimeBase {
 /// - Epoch Time relates the simulation time to a speciific epoch (e.g. the epoch could be that of J2000 or the UNIX epoch), in addition the epoch time is related to the UNIX epoch with a fixed offset. This in turn enables the conversion into human readable dates.
 /// - Mission Time is related to epoch time and provides a mission specific time (e.g. T -/+ n)
 
-public class TimeKeeper {
+public class TimeKeeper : Service {
+  public var name: String = "TimeKeeper"
+  public weak var sim: Simulator!
+
   public var unixTime: Int {
     get { convertToUnixTime(simTime: simTime)}
   }

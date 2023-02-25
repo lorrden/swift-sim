@@ -30,7 +30,10 @@ struct TimedEvent: Comparable {
   }
 }
 
-public class Scheduler {
+public class Scheduler: Service {
+  public var name: String = "Scheduler"
+  public weak var sim: Simulator!
+
   private var immediateEvents: [() -> ()] = []
   private var timedEvents: Heap<TimedEvent> = []
 

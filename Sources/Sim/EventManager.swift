@@ -17,7 +17,10 @@
 //
 
 import Foundation
-public class EventManager {
+public class EventManager : Service {
+  public var name: String = "EventManager"
+  public weak var sim: Simulator!
+
   var events: [[()->()]] = []
   var eventIds : [String:Int] = [:]
   public func queryEventId(eventName: String) -> Int? {

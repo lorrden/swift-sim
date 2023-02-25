@@ -19,6 +19,7 @@
 import Foundation
 
 open class Model {
+  weak var sim: Simulator!
   weak var parent: Model?
   var children: [String : Model]
   let name: String
@@ -28,12 +29,22 @@ open class Model {
     self.children = [:]
   }
 
-  public func add(child: Model) {
+  public func add(child: Model) throws {
+    guard !children.keys.contains(child.name) else {
+      throw SimError.DuplicateName
+    }
+
     children[child.name] = child
     child.parent = self
+    child.sim = self.sim
   }
-  public func add(child: Model, name withName: String) {
+  public func add(child: Model, name withName: String) throws {
+    guard !children.keys.contains(name) else {
+      throw SimError.DuplicateName
+    }
+
     children[name] = child
     child.parent = self
+    child.sim = self.sim
   }
 }

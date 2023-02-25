@@ -29,14 +29,7 @@ public class Simulator {
   public var timeKeeper : TimeKeeper
   public var models : [String : Model]
   public var resolver: Resolver!
-  /// Add root model
-  /// - Parameter model: Root model to add in the simulator
-  public func add(model: Model) throws {
-    guard !models.keys.contains(model.name) else {
-      throw SimError.DuplicateName
-    }
-    models[model.name] = model
-  }
+  public var services : [String : Service]
 
   /// Create a new `Simulator`
   public init() {
@@ -45,7 +38,15 @@ public class Simulator {
     self.scheduler = Scheduler(withTimeKeeper: self.timeKeeper)
     self.eventManager = EventManager()
     self.models = [:]
-    self.resolver = Resolver(sim: self)
+    self.services = [:]
+
+    self.resolver = Resolver()
+
+    try! add(service: self.timeKeeper)
+    try! add(service: self.logger)
+    try! add(service: self.scheduler)
+    try! add(service: self.eventManager)
+    try! add(service: self.resolver)
   }
 
   /// Run simulation for a relative time mission time
@@ -68,4 +69,65 @@ public class Simulator {
   public func run(untilMissionTime missionTime: Int) {
     scheduler.run(untilMissionTime: missionTime)
   }
+
+
+  /// Add root model using the models name
+  /// - Parameter model: Root model to add in the simulator
+  public func add(model: Model) throws {
+    guard !models.keys.contains(model.name) else {
+      throw SimError.DuplicateName
+    }
+    models[model.name] = model
+    model.sim = self
+  }
+  /// Add service using the service name
+  /// - Parameter model: Root model to add in the simulator
+  public func add(service: Service) throws {
+    guard !services.keys.contains(service.name) else {
+      throw SimError.DuplicateName
+    }
+    services[service.name] = service
+    service.sim = self
+  }
+
+  /// Add root model
+  /// - Parameter model: Root model to add in the simulator
+  /// - Parameter name: Name of model
+  public func add(model: Model, withName name: String) throws {
+    guard !models.keys.contains(name) else {
+      throw SimError.DuplicateName
+    }
+    models[name] = model
+    model.sim = self
+  }
+  /// Add service
+  /// - Parameter service: Service object
+  /// - Parameter name: Name of service used when looking it up
+  public func add(service: Service, withName name: String) throws {
+    guard !services.keys.contains(name) else {
+      throw SimError.DuplicateName
+    }
+    services[name] = service
+    service.sim = self
+  }
+
+  /// Get a root model by name
+  /// - Parameter name: Name of root model to get
+  /// - Returns: Root model or nil if not found
+  public func getRootModel(name: String) -> Model? {
+    return models[name]
+  }
+
+  /// Get service
+  /// - Parameter name: Name of service
+  /// - Returns: Service or nil if not found
+  public func getService(name: String) -> Service? {
+    return services[name]
+  }
+
+  // func initialize()
+  // func Publish
+  // func Configure
+  // func connect
+  // func halt(immediate: Bool)
 }
