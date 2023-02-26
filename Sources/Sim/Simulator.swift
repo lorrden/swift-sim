@@ -25,6 +25,13 @@ public protocol Simulator : AnyObject {
   var timeKeeper : TimeKeeper { get }
   var resolver: Resolver { get }
 
+  func initialize()
+  func publish()
+  func configure()
+  func connect()
+
+  func addInit(initializer: @escaping () -> ())
+
   func run(for delta: Int)
   func run(until: Int)
   func run(untilEpochTime epochTime: Int)
@@ -52,6 +59,8 @@ public class SimulatorImpl: Simulator {
   public var resolver: Resolver
   public var services : [String : Service]
 
+  var initializers: [()->()] = []
+
   /// Create a new `Simulator`
   public init() {
     self.timeKeeper = TimeKeeperImpl()
@@ -68,6 +77,52 @@ public class SimulatorImpl: Simulator {
     try! add(service: self.scheduler)
     try! add(service: self.eventManager)
     try! add(service: self.resolver)
+  }
+
+  public func initialize() {
+    for initializer in initializers {
+      initializer()
+    }
+  }
+  public func addInit(initializer: @escaping () -> ()) {
+    initializers.append(initializer)
+  }
+  func publish(model: Model) {
+    model.publish()
+    for (_, child) in model.children {
+      publish(model: child)
+    }
+  }
+
+  public func publish() {
+    for (_, model) in models {
+      publish(model: model)
+    }
+  }
+
+  func configure(model: Model) {
+    model.configure()
+    for (_, child) in model.children {
+      configure(model: child)
+    }
+  }
+
+  public func configure() {
+    for (_, model) in models {
+      configure(model: model)
+    }
+  }
+  func connect(model: Model) {
+    model.connect()
+    for (_, child) in model.children {
+      connect(model: child)
+    }
+  }
+
+  public func connect() {
+    for (_, model) in models {
+      connect(model: model)
+    }
   }
 
   /// Run simulation for a relative time mission time

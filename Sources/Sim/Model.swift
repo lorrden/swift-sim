@@ -47,4 +47,9 @@ open class Model {
     child.parent = self
     child.sim = self.sim
   }
+
+  // Called after everything has been built to finish initialisation
+  public func publish() {}
+  public func configure() {}
+  public func connect() {}
 }
