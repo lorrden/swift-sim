@@ -19,7 +19,7 @@
 import Foundation
 
 open class Model {
-  weak var sim: Simulator!
+  public weak var sim: Simulator!
   weak var parent: Model?
   var children: [String : Model]
   let name: String
