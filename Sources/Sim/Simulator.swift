@@ -154,7 +154,7 @@ public class SimulatorImpl: Simulator {
       throw SimError.DuplicateName
     }
     models[model.name] = model
-    model.sim = self
+    model._sim = self
   }
   /// Add service using the service name
   /// - Parameter model: Root model to add in the simulator
@@ -174,7 +174,7 @@ public class SimulatorImpl: Simulator {
       throw SimError.DuplicateName
     }
     models[name] = model
-    model.sim = self
+    model._sim = self
   }
   /// Add service
   /// - Parameter service: Service object

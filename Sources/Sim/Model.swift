@@ -19,7 +19,8 @@
 import Foundation
 
 open class Model {
-  public weak var sim: Simulator!
+  weak var _sim: Simulator!
+  public weak var sim: Simulator! { get { _sim } }
   weak var parent: Model?
   var children: [String : Model]
   let name: String
@@ -36,7 +37,7 @@ open class Model {
 
     children[child.name] = child
     child.parent = self
-    child.sim = self.sim
+    child._sim = self.sim
   }
   public func add(child: Model, name withName: String) throws {
     guard !children.keys.contains(name) else {
@@ -45,7 +46,7 @@ open class Model {
 
     children[name] = child
     child.parent = self
-    child.sim = self.sim
+    child._sim = self.sim
   }
 
   // Called after everything has been built to finish initialisation
