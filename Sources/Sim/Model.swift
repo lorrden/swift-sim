@@ -23,6 +23,7 @@ open class Model {
   public weak var sim: Simulator! { get { _sim } }
   weak var parent: Model?
   var children: [String : Model]
+  var entrypoints: [String : ()->()] = [:]
   let name: String
 
   public init(name: String) {
@@ -47,6 +48,14 @@ open class Model {
     children[name] = child
     child.parent = self
     child._sim = self.sim
+  }
+
+  public func add(entrypoint: String, operation: @escaping ()->()) throws {
+    guard !entrypoints.keys.contains(entrypoint) else {
+      throw SimError.DuplicateName
+    }
+
+    entrypoints[entrypoint] = operation
   }
 
   // Called after everything has been built to finish initialisation
