@@ -40,6 +40,7 @@ public protocol Scheduler: Service {
   func post(missionTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
   func post(epochTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
   func run(for delta: Int)
+  func run(secs delta: Double)
   func run(until: Int)
   func run(untilEpochTime epochTime: Int)
   func run(untilMissionTime missionTime: Int)
@@ -149,6 +150,11 @@ class SchedulerImpl: Scheduler, Service {
   public func run(for delta: Int) {
     let endTime = timeKeeper.simTime + delta
     run(until: endTime)
+  }
+  func run(secs delta: Double) {
+    let endTime = timeKeeper.simTime + Int(delta/1.0e9)
+    run(until: endTime)
+
   }
 
   fileprivate let timeKeeper: TimeKeeper
