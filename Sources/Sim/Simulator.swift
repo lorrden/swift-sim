@@ -146,7 +146,12 @@ public class SimulatorImpl: Simulator {
     scheduler.run(untilMissionTime: missionTime)
   }
 
-
+  func propagateSim(model: Model) {
+    model._sim = self
+    for (_, child) in model.children {
+      propagateSim(model: child)
+    }
+  }
   /// Add root model using the models name
   /// - Parameter model: Root model to add in the simulator
   public func add(model: Model) throws {
@@ -154,7 +159,7 @@ public class SimulatorImpl: Simulator {
       throw SimError.DuplicateName
     }
     models[model.name] = model
-    model._sim = self
+    propagateSim(model: model)
   }
   /// Add service using the service name
   /// - Parameter model: Root model to add in the simulator

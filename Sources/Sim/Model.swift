@@ -59,7 +59,10 @@ open class Model {
   }
 
   // Called after everything has been built to finish initialisation
-  open func publish() {}
-  open func configure() {}
-  open func connect() {}
+  open func publish() {
+  }
+  open func configure() {
+  }
+  open func connect() {
+  }
 }
