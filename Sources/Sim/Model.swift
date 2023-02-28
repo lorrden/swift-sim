@@ -24,7 +24,7 @@ open class Model {
   weak var parent: Model?
   var children: [String : Model]
   var entrypoints: [String : ()->()] = [:]
-  let name: String
+  public let name: String
 
   public init(name: String) {
     self.name = name
