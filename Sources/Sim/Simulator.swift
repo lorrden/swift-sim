@@ -25,6 +25,7 @@ public protocol Simulator : AnyObject {
   var timeKeeper : TimeKeeper { get }
   var resolver: Resolver { get }
 
+
   func initialize()
   func publish()
   func configure()
@@ -155,20 +156,12 @@ public class SimulatorImpl: Simulator {
   /// Add root model using the models name
   /// - Parameter model: Root model to add in the simulator
   public func add(model: Model) throws {
-    guard !models.keys.contains(model.name) else {
-      throw SimError.DuplicateName
-    }
-    models[model.name] = model
-    propagateSim(model: model)
+    try add(model: model, withName: model.name)
   }
   /// Add service using the service name
   /// - Parameter model: Root model to add in the simulator
   public func add(service: Service) throws {
-    guard !services.keys.contains(service.name) else {
-      throw SimError.DuplicateName
-    }
-    services[service.name] = service
-    service.sim = self
+    try add(service: service, withName: service.name)
   }
 
   /// Add root model
@@ -180,6 +173,15 @@ public class SimulatorImpl: Simulator {
     }
     models[name] = model
     model._sim = self
+    propagateSim(model: model)
+
+    if let clockedModel = model as? ClockedModel {
+      scheduler.post(simTime: Int(clockedModel.period * 1e9),
+                     cycle: Int(clockedModel.period * 1e9),
+                     count: nil) {
+        clockedModel.tick(dt: clockedModel.period)
+      }
+    }
   }
   /// Add service
   /// - Parameter service: Service object

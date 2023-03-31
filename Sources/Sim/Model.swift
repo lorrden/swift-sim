@@ -32,15 +32,9 @@ open class Model {
   }
 
   public func add(child: Model) throws {
-    guard !children.keys.contains(child.name) else {
-      throw SimError.DuplicateName
-    }
-
-    children[child.name] = child
-    child.parent = self
-    child._sim = self.sim
+    try add(child: child, withName: child.name)
   }
-  public func add(child: Model, name withName: String) throws {
+  public func add(child: Model, withName name: String) throws {
     guard !children.keys.contains(name) else {
       throw SimError.DuplicateName
     }
@@ -48,6 +42,14 @@ open class Model {
     children[name] = child
     child.parent = self
     child._sim = self.sim
+
+    if let clockedModel = child as? ClockedModel {
+      sim.scheduler.post(simTime: Int(clockedModel.period * 1e9),
+                     cycle: Int(clockedModel.period * 1e9),
+                     count: nil) {
+        clockedModel.tick(dt: clockedModel.period)
+      }
+    }
   }
 
   public func add(entrypoint: String, operation: @escaping ()->()) throws {
@@ -65,4 +67,11 @@ open class Model {
   }
   open func connect() {
   }
+}
+
+/* The ClockedModel protocol is used to trigger models at a specific rate */
+public protocol ClockedModel {
+  var frequency: Double { get set }
+  var period: Double { get set }
+  func tick(dt: Double)
 }

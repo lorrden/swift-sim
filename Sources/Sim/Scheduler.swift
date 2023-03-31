@@ -19,7 +19,9 @@
 import Collections
 
 struct TimedEvent: Comparable {
-  let time: Int
+  var time: Int
+  let cycle: Int?
+  var count: Int?
   let event: () -> ()
 
   static func < (lhs: TimedEvent, rhs: TimedEvent) -> Bool {
@@ -36,9 +38,9 @@ public protocol Scheduler: Service {
   func post(relative: Double, event: @escaping () -> ())
   func post(missionTime: Int, event: @escaping () -> ())
   func post(epochTime: Int, event: @escaping () -> ())
-  func post(simTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
-  func post(missionTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
-  func post(epochTime: Int, cycle: Int, count: Int, event: @escaping () -> ())
+  func post(simTime: Int, cycle: Int, count: Int?, event: @escaping () -> ())
+  func post(missionTime: Int, cycle: Int, count: Int?, event: @escaping () -> ())
+  func post(epochTime: Int, cycle: Int, count: Int?, event: @escaping () -> ())
   func run(for delta: Int)
   func run(secs delta: Double)
   func run(until: Int)
@@ -63,55 +65,55 @@ class SchedulerImpl: Scheduler, Service {
   ///   - simTime: Simulation time
   ///   - event: Event handler
   public func post(simTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: simTime, event: event))
+    timedEvents.insert(TimedEvent(time: simTime, cycle: nil, count: nil, event: event))
   }
   /// Post an event triggered at a relative time
   /// - Parameters:
   ///   - relative: Relative time in seconds
   ///   - event: Event handler
   public func post(relative: Double, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: timeKeeper.simTime + Int(relative * 1.0e9), event: event))
+    timedEvents.insert(TimedEvent(time: timeKeeper.simTime + Int(relative * 1.0e9), cycle: nil, count: nil, event: event))
   }
   /// Post an event trigeered at a specific mission time
   /// - Parameters:
   ///   - missionTime: Mission time of even
   ///   - event: Event handler
   public func post(missionTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: missionTime, event: event))
+    timedEvents.insert(TimedEvent(time: missionTime, cycle: nil, count: nil, event: event))
   }
   /// Post an event at a specific epoch time
   /// - Parameters:
   ///   - epochTime: Epoch time
   ///   - event: Event handler
   public func post(epochTime: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: epochTime, event: event))
+    timedEvents.insert(TimedEvent(time: epochTime, cycle: nil, count: nil, event: event))
   }
   /// Post a cyclic event triggered at a specific sim time
   /// - Parameters:
   ///   - simTime: Sim time of first triggering
   ///   - cycle: Cycle in nanoseconds
-  ///   - count: Number of times the event should trigger, for indefinite triggerings set to -1
+  ///   - count: Number of times the event should trigger, for indefinite triggerings set to nil
   ///   - event: Event handler
-  public func post(simTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: simTime, event: event))
+  public func post(simTime: Int, cycle: Int, count: Int?, event: @escaping () -> ()) {
+    timedEvents.insert(TimedEvent(time: simTime, cycle: cycle, count: count, event: event))
   }
   /// Post a cyclic event triggered at a specific mission time
   /// - Parameters:
   ///   - missionTime: Mission time of first triggering
   ///   - cycle: Cycle in nanoseconds
-  ///   - count: Number of times the event should trigger, for indefinete triggering set to -1
+  ///   - count: Number of times the event should trigger, for indefinete triggering set to nil
   ///   - event: Event handler
-  public func post(missionTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: missionTime, event: event))
+  public func post(missionTime: Int, cycle: Int, count: Int?, event: @escaping () -> ()) {
+    timedEvents.insert(TimedEvent(time: missionTime, cycle: cycle, count: count, event: event))
   }
   /// Post a cyclic event triggered at a specific epoch time
   /// - Parameters:
   ///   - epochTime: Epoch time of first triggering
   ///   - cycle: Cycle in nanoseconds
-  ///   - count: Number of times the event should trigger, for indefinete triggering set to -1
+  ///   - count: Number of times the event should trigger, for indefinete triggering set to nil
   ///   - event: Event handler
-  public func post(epochTime: Int, cycle: Int, count: Int, event: @escaping () -> ()) {
-    timedEvents.insert(TimedEvent(time: epochTime, event: event))
+  public func post(epochTime: Int, cycle: Int, count: Int?, event: @escaping () -> ()) {
+    timedEvents.insert(TimedEvent(time: epochTime, cycle: cycle, count: count, event: event))
   }
 
   fileprivate func runImmediateEvents() {
@@ -126,9 +128,27 @@ class SchedulerImpl: Scheduler, Service {
     runImmediateEvents()
 
     while (timedEvents.min()?.time ?? Int.max) <= until {
-      let ev = timedEvents.popMin()!
+      var ev = timedEvents.popMin()!
       timeKeeper.simTime = ev.time
       ev.event()
+      var shouldRepost = false
+      if let cycle = ev.cycle {
+        if let count = ev.count {
+          if count <= 1 {
+            ev.count = nil
+          } else {
+            ev.count = count - 1
+            shouldRepost = true
+          }
+        } else {
+          shouldRepost = true
+        }
+
+        if shouldRepost {
+          ev.time = ev.time + cycle
+          timedEvents.insert(ev)
+        }
+      }
       runImmediateEvents()
     }
     timeKeeper.simTime = until
