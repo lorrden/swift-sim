@@ -16,16 +16,18 @@
 // limitations under the License.
 //
 
-@dynamicMemberLookup
-open class Component : Model {
-  var models: [String: Model]
+@attached(member)
+public macro model<T>(_ value: T)
+  = #externalMacro(module: "SimulatorMacroLibrary", type: "ModelMacro")
 
-  public override init(name: String) {
-    self.models = [:]
-    super.init(name: name)
-  }
+@attached(member)
+public macro input<T>(_ value: T) 
+  = #externalMacro(module: "SimulatorMacroLibrary", type: "InputMacro")
 
-  public subscript(dynamicMember member: String) -> Model? {
-    return models[member]
-  }
-}
+@attached(member)
+public macro output<T>(_ value: T) 
+  = #externalMacro(module: "SimulatorMacroLibrary", type: "OutputMacro")
+
+@attached(member)
+public macro field<T>(_ value: T)
+  = #externalMacro(module: "SimulatorMacroLibrary", type: "FieldMacro")

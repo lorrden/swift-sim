@@ -9,8 +9,8 @@ import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
 
-#if canImport(SimMacroLibrary)
-import SimMacroLibrary
+#if canImport(SimulatorMacroLibrary)
+import SimulatorMacroLibrary
 
 let testMacros: [String: Macro.Type] = [
   "model": ModelMacro.self,
@@ -22,7 +22,7 @@ let testMacros: [String: Macro.Type] = [
 
 final class SimMacroTest: XCTestCase {
   func testModelMacro() throws {
-    #if canImport(SimMacroLibrary)
+    #if canImport(SimulatorMacroLibrary)
       assertMacroExpansion(
         """
         @model
@@ -45,7 +45,7 @@ final class SimMacroTest: XCTestCase {
   }
 
   func testInputMacro() throws {
-    #if canImport(SimMacroLibrary)
+    #if canImport(SimulatorMacroLibrary)
       assertMacroExpansion(
         """
         @input
@@ -64,7 +64,7 @@ final class SimMacroTest: XCTestCase {
   }
 
   func testOutputMacro() throws {
-    #if canImport(SimMacroLibrary)
+    #if canImport(SimulatorMacroLibrary)
       assertMacroExpansion(
         """
         @output
@@ -83,7 +83,7 @@ final class SimMacroTest: XCTestCase {
   }
 
   func testFieldMacro() throws {
-    #if canImport(SimMacroLibrary)
+    #if canImport(SimulatorMacroLibrary)
       assertMacroExpansion(
         """
         @field

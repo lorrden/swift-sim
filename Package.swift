@@ -5,17 +5,13 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "Sim",
+    name: "swift-sim",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "Sim",
-            targets: ["Sim"]),
-        .library(
-            name: "SimMacro",
-            targets: ["SimMacro"]
-        ),
+            name: "Simulator",
+            targets: ["Simulator"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -28,31 +24,30 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .macro(
-          name: "SimMacroLibrary",
+          name: "SimulatorMacroLibrary",
           dependencies: [
               .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
               .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
           ]
         ),
 
-        .target(name: "SimMacro", dependencies: ["SimMacroLibrary"]),
         .target(
-            name: "Sim",
+            name: "Simulator",
             dependencies: [
               .product(name: "Collections",
                        package: "swift-collections"),
               .product(name: "OrderedCollections",
                        package: "swift-collections"),
-              "SimMacro"
+              "SimulatorMacroLibrary"
             ]),
         .testTarget(
-            name: "SimTests",
-            dependencies: ["Sim"]),
+            name: "SimulatorTests",
+            dependencies: ["Simulator"]),
 
         .testTarget(
-            name: "SimMacroTests",
+            name: "SimulatorMacroTests",
             dependencies: [
-                "SimMacroLibrary",
+                "SimulatorMacroLibrary",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),

@@ -16,18 +16,13 @@
 // limitations under the License.
 //
 
-@attached(member)
-public macro model<T>(_ value: T)
-  = #externalMacro(module: "SimMacroLibrary", type: "ModelMacro")
+@dynamicMemberLookup
+open class Component : Model {
+  public override init(name: String) {
+    super.init(name: name)
+  }
 
-@attached(member)
-public macro input<T>(_ value: T) 
-  = #externalMacro(module: "SimMacroLibrary", type: "InputMacro")
-
-@attached(member)
-public macro output<T>(_ value: T) 
-  = #externalMacro(module: "SimMacroLibrary", type: "OutputMacro")
-
-@attached(member)
-public macro field<T>(_ value: T)
-  = #externalMacro(module: "SimMacroLibrary", type: "FieldMacro")
+  public subscript(dynamicMember member: String) -> Model? {
+    return children[member]
+  }
+}

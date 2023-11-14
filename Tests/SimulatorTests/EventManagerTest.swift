@@ -17,7 +17,7 @@
 //
 
 import XCTest
-@testable import Sim
+@testable import Simulator
 
 final class EventManagerTest: XCTestCase {
   func testPublication() throws {

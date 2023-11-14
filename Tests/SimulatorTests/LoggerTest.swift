@@ -17,7 +17,7 @@
 //
 
 import XCTest
-@testable import Sim
+@testable import Simulator
 
 fileprivate class NamedModel : Model {
   override init(name: String) {

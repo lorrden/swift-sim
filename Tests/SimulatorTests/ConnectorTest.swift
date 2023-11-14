@@ -17,7 +17,7 @@
 //
 
 import XCTest
-@testable import Sim
+@testable import Simulator
 
 class MyModel : Model {
   @Input public var xInput: Int

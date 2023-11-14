@@ -18,17 +18,55 @@
 
 import Foundation
 
+public protocol Publisher : Service {
+  func publishField(name: String, reader: ()->(), writer: ()->())
+}
+
 open class Model {
   weak var _sim: Simulator!
   public weak var sim: Simulator! { get { _sim } }
   weak var parent: Model?
   var children: [String : Model]
   var entrypoints: [String : ()->()] = [:]
+
+  var stateWriters: [String : (Any)->()] = [:]
+  var stateReaders: [String : ()->Any] = [:]
+
   public let name: String
 
   public init(name: String) {
     self.name = name
     self.children = [:]
+  }
+
+  public func publishFieldReader(name: String, reader: @escaping ()->(Any)) throws {
+    guard !stateReaders.keys.contains(name) else {
+      throw SimError.DuplicateName
+    }
+
+    stateReaders[name] = reader
+  }
+  public func publishFieldWriter(name: String, writer: @escaping (Any)->()) throws {
+    guard !stateWriters.keys.contains(name) else {
+      throw SimError.DuplicateName
+    }
+
+    stateWriters[name] = writer
+  }
+  public func getField(name: String) throws -> Any {
+    guard let reader = stateReaders[name] else {
+      throw SimError.InvalidFieldName
+    }
+
+    return reader()
+  }
+  public func setField(name: String, value: Any) throws
+  {
+    guard let writer = stateWriters[name] else {
+      throw SimError.InvalidFieldName
+    }
+
+    writer(value)
   }
 
   public func add(child: Model) throws {

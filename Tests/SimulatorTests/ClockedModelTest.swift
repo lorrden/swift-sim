@@ -17,7 +17,7 @@
 //
 
 import XCTest
-@testable import Sim
+@testable import Simulator
 
 class ClockedFoo : Model, ClockedModel {
   var period: Double = 0.1
